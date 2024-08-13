@@ -51,7 +51,7 @@ install(TARGETS my_library
 
 
 # Install the public headers
-install(DIRECTORY include/ DESTINATION include)
+install(DIRECTORY ../include/ DESTINATION include)
 
 # Install the package configuration files
 install(EXPORT my_libraryTargets
