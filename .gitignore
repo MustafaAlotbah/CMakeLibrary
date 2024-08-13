@@ -1,0 +1,27 @@
+output/
+cmake-build-debug/
+build/
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Static Libraries
+*.lib
+*.a
+
+# Shared libraries (e.g., DLLs, .so files)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.out
+*.app
+*.exe
+
+# Generated files from IDEs
+*.vscode/
+*.idea/
+
