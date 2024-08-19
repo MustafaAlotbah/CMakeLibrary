@@ -4,5 +4,6 @@
 
 #include <string>
 
-
-std::string internalGetVersion();
+namespace my_library::internal {
+  std::string internalGetVersion();
+}

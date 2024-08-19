@@ -27,7 +27,7 @@ It is designed to help developers create reusable, maintainable, and portable li
    Use the provided configure.py script to rename the project according to your library's name:
 
    ```bash
-   python3 configure.py --library-name <new_library_name> --project-name <new_project_name>
+   python configure.py --library-name <new_library_name>
    ```
 
    This script will:

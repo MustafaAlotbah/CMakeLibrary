@@ -46,6 +46,7 @@ endif()
 # This helps CMake locate the required libraries and packages.
 set(CMAKE_PREFIX_PATH
         "${DEPENDENCY_FOLDER}/pkgconfig/"
+        "${DEPENDENCY_FOLDER}/Catch2/"
 )
 
 
