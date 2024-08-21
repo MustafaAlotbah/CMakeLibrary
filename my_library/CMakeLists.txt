@@ -25,7 +25,7 @@ target_include_directories(my_library
 )
 
 # Find and link the required libraries below
-#find_library(SOMELIBRARY_LIB NAMES somelibrary libsomelibrary)
+#find_package(SOMELIBRARY_LIB NAMES somelibrary libsomelibrary)
 #target_link_libraries(my_library PRIVATE ${SOMELIBRARY_LIB})
 #
 ## Optionally, you can check if the library was found and provide a useful error message
@@ -35,7 +35,9 @@ target_include_directories(my_library
 
 
 # Hide Internal functions
-target_compile_options(my_library PRIVATE -fvisibility=hidden)
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(Logify PRIVATE -fvisibility=hidden)
+endif ()
 set_target_properties(my_library PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(my_library PROPERTIES VISIBILITY_INLINES_HIDDEN YES)
 
