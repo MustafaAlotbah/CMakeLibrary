@@ -6,14 +6,42 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-# Set compiler flags based on build type
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    message(STATUS "Configuring for a Debug build")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g3 -Og")
-    add_definitions(-DDEBUG_MODE)
-else()
-    message(STATUS "Configuring for a Release build")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g0 -O3")
+# Check the compiler and set compiler flags accordingly
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    message(STATUS "Configuring for GCC/Clang")
+
+    # Set compiler flags for GCC/Clang
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        message(STATUS "Configuring for a Debug build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g3 -Og")
+        add_definitions(-DDEBUG_MODE)
+    else ()
+        message(STATUS "Configuring for a Release build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g0 -O3")
+    endif ()
+
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "Configuring for MSVC")
+
+    # Enable Hot Reload for MSVC compilers if supported.
+    if (POLICY CMP0141)
+        message(STATUS "Configuring Hot Reload for MSVC")
+        cmake_policy(SET CMP0141 NEW)
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+    endif()
+
+    # Set compiler flags for MSVC
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        message(STATUS "Configuring for a Debug build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Zi /Od")
+        add_definitions(-DDEBUG_MODE)
+    else ()
+        message(STATUS "Configuring for a Release build")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Ox /DNDEBUG")
+    endif ()
+
+else ()
+    message(WARNING "Unknown compiler, using default settings")
 endif()
 
 
@@ -53,12 +81,10 @@ set(CMAKE_PREFIX_PATH
 # Find required packages
 find_package(PkgConfig REQUIRED)
 
-
 # Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib")
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib/$<CONFIG>/")
 
 # Include subdirectories for building
 add_subdirectory(my_library)
