@@ -36,7 +36,7 @@ target_include_directories(my_library
 
 # Hide Internal functions
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(Logify PRIVATE -fvisibility=hidden)
+    target_compile_options(my_library PRIVATE -fvisibility=hidden)
 endif ()
 set_target_properties(my_library PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(my_library PROPERTIES VISIBILITY_INLINES_HIDDEN YES)

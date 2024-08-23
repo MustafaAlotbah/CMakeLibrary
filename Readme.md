@@ -65,6 +65,19 @@ It is designed to help developers create reusable, maintainable, and portable li
 
    This will generate platform-specific packages (e.g., .zip for Windows, .tar.gz for Linux).
 
+## Customization
+
+Currently, all warnings are treated as errors. 
+This is to help you avoid making mistakes. 
+However, you may change that by changing the root-level `CMakeLists.txt` as follows 
+
+- For **GCC**: 
+  - Remove `-Wextra` to reduce warning level, or
+  - Remove `-Werror` to not treat warnings as errors.
+
+- For **MSVC**: 
+  - Replace `-W4` with `-W3` to reduce warning level, or 
+  - Remove `/WX` to not treat warnings as errors.
 
 ## Contributing
 

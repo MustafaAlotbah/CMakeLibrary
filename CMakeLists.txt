@@ -13,11 +13,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Set compiler flags for GCC/Clang
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         message(STATUS "Configuring for a Debug build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g3 -Og")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wextra -Wall -g3 -Og")
         add_definitions(-DDEBUG_MODE)
     else ()
         message(STATUS "Configuring for a Release build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g0 -O3")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wextra -Wall -g0 -O3")
     endif ()
 
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -33,17 +33,19 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # Set compiler flags for MSVC
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         message(STATUS "Configuring for a Debug build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Zi /Od")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /Zi /Od /DDEBUG_MODE")
         add_definitions(-DDEBUG_MODE)
     else ()
         message(STATUS "Configuring for a Release build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Ox /DNDEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /Ox /DNDEBUG")
     endif ()
 
 else ()
     message(WARNING "Unknown compiler, using default settings")
 endif()
 
+# Enable compile command to accelerate indexing for some IDEs (Visual Studio, CLion)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Define the platform-specific paths and packaging configurations.
 # This ensures that the correct dependencies are used depending on the platform.
@@ -89,3 +91,4 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib/$<CONFIG>/")
 # Include subdirectories for building
 add_subdirectory(my_library)
 add_subdirectory(tests)
+add_subdirectory(examples)

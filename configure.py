@@ -200,6 +200,16 @@ def rename_project(base_path, library_name):
         os.path.join(base_path, 'tests', f"{library_name}Tests")
     )
 
+    # Examples
+
+    modify_file(base_path, 'examples/example_01/CMakeLists.txt', {
+        'my_library': library_name
+    })
+
+    modify_file(base_path, 'examples/example_01/main.cpp', {
+        'my_library': library_name
+    })
+
 
 def main():
     """
