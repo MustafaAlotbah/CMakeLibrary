@@ -126,7 +126,9 @@ def rename_project(base_path, library_name):
 
     modify_file(base_path, 'cmake/my_libraryConfig.cmake.in', {
         '@PACKAGE_INIT@': '@PACKAGE_INIT@',
-        'my_libraryTargets.cmake': f'{library_name}Targets.cmake'
+        'my_libraryTargets.cmake': f'{library_name}Targets.cmake',
+        'my_library::my_library': f'{library_name}::{library_name}',
+        'libmy_library': f'lib{library_name}'
     }, f'{library_name}Config.cmake.in')
 
     # Public Headers
