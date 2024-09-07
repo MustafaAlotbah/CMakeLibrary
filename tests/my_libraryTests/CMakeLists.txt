@@ -1,3 +1,5 @@
 
-add_executable(my_libraryTests EXCLUDE_FROM_ALL "main.cpp" "versionTests.cpp")
+add_executable(my_libraryTests "main.cpp" "versionTests.cpp")
 target_link_libraries(my_libraryTests PRIVATE my_library Catch2::Catch2)
+
+add_test(NAME my_libraryTests COMMAND my_libraryTests)
