@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(lib_my_library VERSION 0.1.0)
+project(lib_my_library_integration_tests VERSION 0.1.2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,40 +19,31 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Set compiler flags for GCC/Clang
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         message(STATUS "Configuring for a Debug build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wextra -Wall -g3 -Og")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g3 -Og")
         add_definitions(-DDEBUG_MODE)
     else ()
         message(STATUS "Configuring for a Release build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wpedantic -Werror -Wextra -Wall -g0 -O3")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -g0 -O3")
     endif ()
 
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "Configuring for MSVC")
     set(BuildPipeline "VisualStudio")
 
-    # Enable Hot Reload for MSVC compilers if supported.
-    if (POLICY CMP0141)
-        message(STATUS "Configuring Hot Reload for MSVC")
-        cmake_policy(SET CMP0141 NEW)
-        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-    endif()
-
     # Set compiler flags for MSVC
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         message(STATUS "Configuring for a Debug build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /Zi /Od /DDEBUG_MODE")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Zi /Od")
         add_definitions(-DDEBUG_MODE)
     else ()
         message(STATUS "Configuring for a Release build")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /Ox /DNDEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX /Ox /DNDEBUG")
     endif ()
 
 else ()
     message(WARNING "Unknown compiler, using default settings")
 endif()
 
-# Enable compile command to accelerate indexing for some IDEs (Visual Studio, CLion)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Define the platform-specific paths and packaging configurations.
 # This ensures that the correct dependencies are used depending on the platform.
@@ -84,18 +75,17 @@ endif()
 set(CMAKE_PREFIX_PATH
         "${DEPENDENCY_FOLDER}/pkgconfig/"
         "${DEPENDENCY_FOLDER}/Catch2/"
+        "${DEPENDENCY_FOLDER}/my_library/${BuildPipeline}/${CMAKE_BUILD_TYPE}"
 )
-
 
 # Find required packages
 find_package(PkgConfig REQUIRED)
+find_package(my_library REQUIRED)
 
 # Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib/$<CONFIG>/")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib/$<CONFIG>")
 
-# Include subdirectories for building
-add_subdirectory(my_library)
-add_subdirectory(tests)
-add_subdirectory(examples)
+
+add_subdirectory("tests")

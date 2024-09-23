@@ -1,6 +1,9 @@
 # Define the my_library library target
 add_library(my_library SHARED)
 
+# Create an alias with the my_library namespace
+add_library(my_library::my_library ALIAS my_library)
+
 # Add sources to the my_library library target
 target_sources(my_library PRIVATE
         source/my_library.cpp

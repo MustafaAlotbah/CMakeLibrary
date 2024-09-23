@@ -10,6 +10,7 @@ It is designed to help developers create reusable, maintainable, and portable li
 - **Version Management**: Embed version information directly into the library.
 - **Visibility Control**: Properly manage symbol visibility across different platforms.
 - **Modular Structure**: Separate public API, private implementation, and tests for clear code organization.
+- **GitGub Workflows**: Out-of-the-box Continuous Integration with GitHub workflows.
 
 ## Usage
 
@@ -64,6 +65,45 @@ It is designed to help developers create reusable, maintainable, and portable li
    ```
 
    This will generate platform-specific packages (e.g., .zip for Windows, .tar.gz for Linux).
+
+### 7. Artifact Generation
+
+  To generate an artifact with version `1.2.3`, run the following commands:
+
+  - On Windows (with MinGW and MSVC builds):
+
+   ```bash
+   ./release.ps1 1.2.3
+   ```
+
+  This will generate `Release` and `Debug` builds for both MinGW and MSVC.
+
+  - On Linux (with GCC builds):
+
+   ```bash
+   ./release.sh 1.2.3
+   ```
+
+  This will generate `Release` and `Debug` builds using GCC.
+
+### 8. Artifact Testing
+
+  To test the artifact, first generate an artifact with the version `test` (as described in section 7), then
+  
+  - On Windows, run
+
+   ```bash
+   ./installation_tests.ps1
+   ```
+
+  On Linux, run
+
+   ```bash
+   ./installation_tests.sh
+   ```
+
+  These scripts will place the library and necessary runtime dependencies into an isolated folder, set up the tests, and link the artifact as a dependency. 
+  The tests will then be executed to validate the artifact.
 
 ## Customization
 

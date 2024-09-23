@@ -51,7 +51,7 @@ def replace_and_rename(file_path, replacements, new_file_name=None):
     for old, new in replacements.items():
         content = content.replace(old, new)
 
-    with open(file_path, 'w', encoding='utf-8') as file:
+    with open(file_path, 'w', encoding='utf-8', newline='\n') as file:
         file.write(content)
 
     if new_file_name:
@@ -202,6 +202,12 @@ def rename_project(base_path, library_name):
         os.path.join(base_path, 'tests', f"{library_name}Tests")
     )
 
+    # Installation Tests
+
+    modify_file(base_path, 'installation_tests/CMakeLists.txt', {
+        'my_library': library_name
+    })
+
     # Examples
 
     modify_file(base_path, 'examples/example_01/CMakeLists.txt', {
@@ -211,6 +217,17 @@ def rename_project(base_path, library_name):
     modify_file(base_path, 'examples/example_01/main.cpp', {
         'my_library': library_name
     })
+
+    # Scripts
+
+    modify_file(base_path, 'installation_tests.sh', {
+        'my_library': library_name
+    })
+
+    modify_file(base_path, 'installation_tests.ps1', {
+        'my_library': library_name
+    })
+
 
 
 def main():
