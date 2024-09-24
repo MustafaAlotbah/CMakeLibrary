@@ -27,7 +27,7 @@ function Invoke-LibraryBuild {
 
     if ($BuildSystem -eq "MinGW") {
         Write-Host "Running CMake with MinGW Makefiles..."
-        cmake .. -G "MinGW Makefiles"
+        cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE="$BuildMode"
         if (-not $?) {
             Set-Location ..
             Write-Host "CMake configuration failed for MinGW." -ForegroundColor Red
@@ -35,7 +35,7 @@ function Invoke-LibraryBuild {
         }
     } elseif ($BuildSystem -eq "VisualStudio") {
         Write-Host "Running CMake with Visual Studio 17 2022..."
-        cmake .. -G "Visual Studio 17 2022"
+        cmake .. -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE="$BuildMode"
         if (-not $?) {
             Set-Location ..
             Write-Host "CMake configuration failed for Visual Studio." -ForegroundColor Red

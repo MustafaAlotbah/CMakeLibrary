@@ -1,30 +1,45 @@
+# Script initialization: Defines a parameter to specify the version of the release being tested
 param(
     [string]$Version = "test"
 )
 
-# Define paths
+# Define key directory paths required for the installation validation process
+# $installTemp:  Temporary workspace for conducting installation testing
+# $deps:         Directory containing build dependencies (target architecture is win_x86_64)
+# $testArtifact: Output directory for compiled artifacts of the current version
+# $libraryName:  The name of the library under test, used for directory structure consistency
 $installTemp = ".\installation_tests_temp"
-$catch2 = ".\dependencies\win_x86_64\Catch2\"
+$deps = "\dependencies\win_x86_64\"
 $testArtifact = ".\output\artifact\v$Version\win_x86_64\"
 $libraryName = "my_library"
 
-# Create temporary directory for installation tests
+# Preliminary validation: Ensures the presence of the required build artifact for the specified version
 if (-not (Test-Path $testArtifact))
 {
     Write-Error "Testing artifact could not be found! Did you run '.\release.ps1 -Version $Version'?"
     exit 1
 }
 
-# Prepare library for integratin build
+# Function to orchestrate the library integration build and validation process across different configurations
 function Invoke-LibraryBuild
 {
     param(
-        [string]$BuildMode,
-        [string]$BuildSystem
+        [string]$BuildMode,   # Defines the build configuration (e.g., Debug/Release)
+        [string]$BuildSystem  # Defines the build system to be used (e.g., MinGW, Visual Studio)
     )
 
-    $outputRelease = ".\output\$BuildMode\"
+    # Initial housekeeping:
+    # Removes any pre-existing temporary installation directories to ensure a clean build environment
+    if (Test-Path $installTemp)
+    {
+        Write-Host "Build directory exists. Emptying it to ensure a clean workspace..."
+        Remove-Item -Recurse -Force $installTemp
+    }
 
+    # Create a temporary directory to host installation files
+    mkdir $installTemp > $null
+
+    # Build system abstraction: Set the appropriate CMake generator based on the selected build system
     if ($BuildSystem -eq "MinGW")
     {
         $GeneratorName = "MinGW Makefiles"
@@ -36,49 +51,62 @@ function Invoke-LibraryBuild
 
     Write-Host "Testing Installation for $GeneratorName in $BuildMode mode." -ForegroundColor Blue
 
-    # Create temporary directory for installation tests
-    if (-not (Test-Path $installTemp))
-    {
-        mkdir $installTemp
-    }
-
-    # Copy necessary files and dependencies
+    # Copy necessary components for testing (CMakeLists, dependencies, test suites) to the temporary workspace
     Copy-Item .\installation_tests\CMakeLists.txt  "$installTemp\CMakeLists.txt"
-    Copy-Item -Recurse $catch2                     "$installTemp\dependencies\win_x86_64\Catch2"
-    Copy-Item -Recurse $testArtifact               "$installTemp\dependencies\win_x86_64\$libraryName"
+    Copy-Item -Recurse .\$deps                     "$installTemp\$deps\"
+    Copy-Item -Recurse $testArtifact               "$installTemp\$deps\$libraryName"
     Copy-Item -Recurse .\tests                     "$installTemp\tests"
 
     # Navigate to temp folder
     Set-Location $installTemp
 
     # Create build folder and run CMake
-    mkdir build
+    mkdir build > $null
     Set-Location build
 
+    # Generate build system files based on the specified generator and configuration
     cmake .. -G "$GeneratorName" -DCMAKE_BUILD_TYPE="$BuildMode"
     if (-not $?)
     {
-        Set-Location ../../../
+        Set-Location ../../
         Remove-Item -Path $installTemp -Recurse -Force
         Write-Host "CMake configuration failed for $GeneratorName in $BuildMode mode." -ForegroundColor Red
         exit 1
     }
 
-    cmake --build . --config $BuildMode
+    # Compile the project using the generated build files
+    cmake --build . --config "$BuildMode"
     if (-not $?)
     {
-        Set-Location ../../../
+        Set-Location ../../
         Remove-Item -Path $installTemp -Recurse -Force
         Write-Host "Build failed for $GeneratorName in $BuildMode mode." -ForegroundColor Red
         exit 1
     }
 
-    # Copy the resulting binaries (adjust paths as needed)
-    Copy-Item "..\dependencies\win_x86_64\$libraryName\$BuildSystem\$BuildMode\bin\*.*" ..\$outputRelease
+    # Copy the binaries from the dependency folder structure into the release output directory
+    # Assuming binaries are in the structure \PackageName\BuildSystem\BuildMode\bin\*
+    Get-ChildItem -Directory "..\$deps" | ForEach-Object {
+        $package = $_.Name
+        $sourcePath = Join-Path "..\$deps\$package\$BuildSystem\$BuildMode\bin" "*.*"
 
-    # Run the tests
+        # Validate source path existence and copy binaries to the output folder
+        if (Test-Path $sourcePath)
+        {
+            Copy-Item "..\$deps\$package\$BuildSystem\$BuildMode\bin\*.*" "..\output\$BuildMode\"
+            if (-not $?)
+            {
+                Set-Location ../../
+                Remove-Item -Path $installTemp -Recurse -Force
+                Write-Host "Could not copy binaries" -ForegroundColor Red
+                exit 1
+            }
+        }
+    }
+
+    # Navigate to the test suite directory and run the CTest test harness with output enabled for failures
     Set-Location .\tests\
-    ctest --output-on-failure -C $BuildMode
+    ctest --output-on-failure -C "$BuildMode"
     if (-not $?)
     {
         Set-Location ../../../
