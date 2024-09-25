@@ -9,6 +9,7 @@ if (-not $Version) {
 
 # Set the build directory
 $BuildDir = "build"
+$libraryName = "my_library"
 
 function Invoke-LibraryBuild {
     param (
@@ -55,7 +56,7 @@ function Invoke-LibraryBuild {
     }
 
     # Construct the installation path
-    $InstallDir = "../output/artifact/v$Version/win_x86_64/$BuildSystem/$BuildMode"
+    $InstallDir = "../output/artifact/v$Version/win_x86_64/$libraryName/$BuildSystem/$BuildMode"
     Write-Host "Installing the project to $InstallDir..."
     cmake --install . --prefix $InstallDir --config $BuildMode
     if (-not $?) {

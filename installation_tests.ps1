@@ -10,8 +10,8 @@ param(
 # $libraryName:  The name of the library under test, used for directory structure consistency
 $installTemp = ".\installation_tests_temp"
 $deps = "\dependencies\win_x86_64\"
-$testArtifact = ".\output\artifact\v$Version\win_x86_64\"
 $libraryName = "my_library"
+$testArtifact = ".\output\artifact\v$Version\win_x86_64\$libraryName"
 
 # Preliminary validation: Ensures the presence of the required build artifact for the specified version
 if (-not (Test-Path $testArtifact))
@@ -93,11 +93,11 @@ function Invoke-LibraryBuild
         # Validate source path existence and copy binaries to the output folder
         if (Test-Path $sourcePath)
         {
-            Copy-Item "..\$deps\$package\$BuildSystem\$BuildMode\bin\*.*" "..\output\$BuildMode\"
+            Copy-Item $sourcePath "..\output\$BuildSystem\$BuildMode\"
             if (-not $?)
             {
                 Set-Location ../../
-                Remove-Item -Path $installTemp -Recurse -Force
+#                Remove-Item -Path $installTemp -Recurse -Force
                 Write-Host "Could not copy binaries" -ForegroundColor Red
                 exit 1
             }

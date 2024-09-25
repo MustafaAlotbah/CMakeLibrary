@@ -15,6 +15,14 @@ target_sources(my_library PRIVATE
 target_compile_definitions(my_library PRIVATE MY_LIBRARY_VERSION="${PROJECT_VERSION}")
 target_compile_definitions(my_library PRIVATE BUILDING_MY_LIBRARY="1")
 
+# Position-independent code for static library
+get_target_property(TARGET_TYPE my_library TYPE)
+if(TARGET_TYPE STREQUAL "STATIC_LIBRARY")
+    target_compile_definitions(my_library PUBLIC STATIC_MY_LIBRARY="1")
+    message(STATUS "Compiling with position independent code!")
+    set_target_properties(my_library PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # Specify the include directories for the target
 target_include_directories(my_library
     PUBLIC

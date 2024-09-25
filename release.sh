@@ -10,6 +10,7 @@ fi
 
 # Set the build directory
 BuildDir="build"
+LIBRARY_NAME="my_library"
 
 # Function to build the project
 build_project() {
@@ -32,7 +33,7 @@ build_project() {
     cmake --build . --config "$build_mode"  || exit
 
     # Construct the installation path
-    InstallDir="../output/artifact/v$VERSION/linux_x86_64/$build_system/$build_mode"
+    InstallDir="../output/artifact/v$VERSION/linux_x86_64/$LIBRARY_NAME/$build_system/$build_mode"
     echo "Installing the project to $InstallDir..."
     cmake --install . --prefix "$InstallDir" --config "$build_mode" || exit
 

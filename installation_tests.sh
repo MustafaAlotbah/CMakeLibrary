@@ -6,8 +6,8 @@ VERSION=${1:-"test"}
 # Define paths
 INSTALL_TEMP="./installation_tests_temp"
 CATCH2="./dependencies/linux_x86_64/Catch2/"
-TEST_ARTIFACT="./output/artifact/v$VERSION/linux_x86_64/"
 LIBRARY_NAME="my_library"
+TEST_ARTIFACT="./output/artifact/v$VERSION/linux_x86_64/$LIBRARY_NAME"
 
 # Check if the test artifact exists
 if [ ! -d "$TEST_ARTIFACT" ]; then

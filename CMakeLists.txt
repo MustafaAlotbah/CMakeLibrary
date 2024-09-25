@@ -91,9 +91,9 @@ set(CMAKE_PREFIX_PATH
 find_package(PkgConfig REQUIRED)
 
 # Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/$<CONFIG>/")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/lib/$<CONFIG>/")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/${BuildPipeline}/$<CONFIG>/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/${BuildPipeline}/$<CONFIG>/")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/output/${BuildPipeline}/$<CONFIG>/lib/")
 
 # Include subdirectories for building
 add_subdirectory(my_library)
